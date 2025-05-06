@@ -4,9 +4,9 @@
 use crate::take0ver;
 
 // External Libraries
-use prettytable::{table, row, cell};
-use rustyline::{Editor, error};
 use colored::*;
+use prettytable::table;
+use rustyline::{error, DefaultEditor};
 
 // Standard Libraries
 use std::process::exit;
@@ -24,27 +24,26 @@ pub fn prompt() {
         lport: "1337".to_string(),
     };
     // Console prompts
-    let mut rl = Editor::<()>::new();
+    let mut rl = DefaultEditor::new().unwrap();
     loop {
         let readline = rl.readline("take0ver/generator -> ");
         match readline {
             Ok(mut line) => {
-                rl.add_history_entry(line.clone());
+                rl.add_history_entry(&line).unwrap();
                 // Exits safely
                 if line == "exit" {
                     println!("{}", "Exiting...".red().bold());
                     exit(0);
 
                 // Help
-                } else if line == "help"{
-                    println!("{}", "host=[TARGET-IP]\nExample: host=127.0.0.1\nport=[TARGET-PORT]\nExample: port=1337\ninfo - display your current variables\nrun - generates the payload using your current variables".green().bold())    
+                } else if line == "help" {
+                    println!("{}", "host=[TARGET-IP]\nExample: host=127.0.0.1\nport=[TARGET-PORT]\nExample: port=1337\ninfo - display your current variables\nrun - generates the payload using your current variables\nback - go back to main menu".green().bold())
 
                 // Get Target variable info
                 } else if line == "info" {
-                    let table = table!(["host", data.lhost],
-                        ["port", data.lport]);
-                        
-                    println!("{}" , table.to_string().blue().bold());
+                    let table = table!(["host", data.lhost], ["port", data.lport]);
+
+                    println!("{}", table.to_string().blue().bold());
 
                 // Sets host variable
                 } else if line.to_lowercase().contains("host") {
@@ -65,9 +64,13 @@ pub fn prompt() {
                 // Generates payload
                 } else if line.to_lowercase() == "run" {
                     super::generate(data.lhost.clone(), data.lport.clone());
-
                 } else {
-                    println!("{}", "Invalid Command. Use \"help\" to list available commands".red().bold())
+                    println!(
+                        "{}",
+                        "Invalid Command. Use \"help\" to list available commands"
+                            .red()
+                            .bold()
+                    )
                 }
             }
             Err(error::ReadlineError::Interrupted) => {

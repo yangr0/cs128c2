@@ -1,20 +1,20 @@
 //! Runs prompt(in home context)
 
 // External libraries
-use rustyline::{Editor, error};
 use colored::*;
+use rustyline::{error, DefaultEditor};
 
 // Standard Libraries
 use std::process::exit;
 
 // Console prompts
 pub fn prompt() {
-    let mut rl = Editor::<()>::new();
+    let mut rl = DefaultEditor::new().unwrap();
     loop {
         let readline = rl.readline("take0ver -> ");
         match readline {
             Ok(line) => {
-                rl.add_history_entry(line.clone());
+                rl.add_history_entry(&line).unwrap();
                 super::intline(line);
             }
             Err(error::ReadlineError::Interrupted) => {

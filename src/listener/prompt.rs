@@ -4,9 +4,9 @@
 use crate::take0ver;
 
 // External Libraries
-use rustyline::{Editor, error};
-use prettytable::{table, row, cell};
 use colored::*;
+use prettytable::table;
+use rustyline::{error, DefaultEditor};
 
 // Standard Libraries
 use std::process::exit;
@@ -25,12 +25,12 @@ pub fn prompt() {
         lport: "1337".to_string(),
     };
     // Console prompts
-    let mut rl = Editor::<()>::new();
+    let mut rl = DefaultEditor::new().unwrap();
     loop {
         let readline = rl.readline("take0ver/listener -> ");
         match readline {
             Ok(mut line) => {
-                rl.add_history_entry(line.clone());
+                rl.add_history_entry(&line).unwrap();
                 // Exits safely
                 if line == "exit" {
                     println!("{}", "Exiting...".red().bold());
@@ -38,13 +38,12 @@ pub fn prompt() {
 
                 // Help
                 } else if line == "help" {
-                    println!("{}", "host=[LISTEN-IP]\nExample: host=0.0.0.0\nport=[LISTEN-PORT]\nExample: port=1337\ninfo - display your current variables\nrun - starts the listener using current variables".green().bold())
+                    println!("{}", "host=[LISTEN-IP]\nExample: host=0.0.0.0\nport=[LISTEN-PORT]\nExample: port=1337\ninfo - display your current variables\nrun - starts the listener using current variables\nback - go back to main menu".green().bold())
 
                 // Get target info
                 } else if line == "info" {
-                    let table = table!(["host", data.lhost],
-                        ["port", data.lport]);
-                        
+                    let table = table!(["host", data.lhost], ["port", data.lport]);
+
                     println!("{}", table.to_string().blue().bold())
 
                 // Sets listener host based on user input
@@ -65,11 +64,21 @@ pub fn prompt() {
 
                 // Starts the listener
                 } else if line == "run" {
-                    println!("{}{}:{}...", "Started listener on ".green().bold(), data.lhost.blue().bold(), data.lport.blue().bold());
+                    println!(
+                        "{}{}:{}...",
+                        "Started listener on ".green().bold(),
+                        data.lhost.blue().bold(),
+                        data.lport.blue().bold()
+                    );
                     println!("{}", "Do [CTRL-C] to cancel".yellow().bold());
                     super::listen(data.lhost.clone(), data.lport.clone());
-
-                } else { println!("{}", "Invalid Command. Use \"help\" to list available commands".red().bold());
+                } else {
+                    println!(
+                        "{}",
+                        "Invalid Command. Use \"help\" to list available commands"
+                            .red()
+                            .bold()
+                    );
                 }
             }
             Err(error::ReadlineError::Interrupted) => {
