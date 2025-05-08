@@ -16,4 +16,4 @@ Type `help` after you are in the CLI
 
 5. In target computer powershell: `Set-ExecutionPolicy Unrestricted`
 
-4. Move payload to target computer and run
+6. Move payload to target computer and run (right-click -> run in PowerShell)
