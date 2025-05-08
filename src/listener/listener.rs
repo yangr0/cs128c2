@@ -18,7 +18,7 @@ where
         loop {
             let len = match r.read(&mut buffer) {
                 Ok(read) => read,
-                Err(_) => panic!(),
+                Err(_) => exit(1),
             };
             if len == 0 {
                 println!("{}", "shell closed\n".red().bold());
@@ -26,7 +26,7 @@ where
             }
             match w.write(&buffer[..len]) {
                 Ok(write) => write,
-                Err(_) => panic!(),
+                Err(_) => exit(1),
             };
             match w.flush() {
                 Ok(output) => output,
@@ -52,7 +52,7 @@ pub fn listen(host: String, port: String) {
                 "{}{}{}",
                 "Connection recieved from ".green().bold(),
                 addr.to_string().green().bold(),
-                "! Congrats, you are now in a shell!".green().bold()
+                "! In a shell!".green().bold()
             );
             accept
         }

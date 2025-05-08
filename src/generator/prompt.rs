@@ -37,7 +37,7 @@ pub fn prompt() {
 
                 // Help
                 } else if line == "help" {
-                    println!("{}", "host=[TARGET-IP]\nExample: host=127.0.0.1\nport=[TARGET-PORT]\nExample: port=1337\ninfo - display your current variables\nrun - generates the payload using your current variables\nback - go back to main menu".green().bold())
+                    println!("{}", "host=[LISTEN-IP]\nExample: host=1.1.1.1\nport=[LISTEN-PORT]\nExample: port=1337\ninfo - display your current variables\nrun - generates the payload using your current variables\nback - go back to main menu".green().bold())
 
                 // Get Target variable info
                 } else if line == "info" {

@@ -18,9 +18,3 @@ Consists of 3 main components:
 - Support for Windows
 
 - Command Execution: Send commands to agents and receive responses
-
-## Additional Features
-
-- Persistence: Maintain access to the target machine even after a reboot
-
-- Encryption: Secure communication between the server and agents
